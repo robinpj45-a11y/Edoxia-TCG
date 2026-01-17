@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { AuthButtons } from './auth-buttons';
 
 export function MainNav() {
   const pathname = usePathname();
@@ -28,6 +29,9 @@ export function MainNav() {
           </Link>
         ))}
       </nav>
+      <div className="ml-auto flex items-center space-x-4">
+        <AuthButtons />
+      </div>
     </div>
   );
 }
