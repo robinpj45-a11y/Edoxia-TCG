@@ -14,8 +14,8 @@ export function MainNav() {
   ];
 
   return (
-    <div className="flex w-full items-center">
-      <nav className="flex items-center space-x-4 lg:space-x-6 ml-6">
+    <div className="flex w-full items-center px-6">
+      <nav className="flex items-center space-x-4 lg:space-x-6">
         {links.map((link) => (
           <Link
             key={link.href}
@@ -29,7 +29,7 @@ export function MainNav() {
           </Link>
         ))}
       </nav>
-      <div className="ml-auto flex items-center space-x-4 mr-6">
+      <div className="ml-auto flex items-center space-x-4">
         <AuthButtons />
       </div>
     </div>
