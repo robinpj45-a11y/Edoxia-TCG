@@ -15,7 +15,7 @@ export function MainNav() {
 
   return (
     <div className="flex w-full items-center justify-between">
-      <nav className="flex items-center space-x-4 lg:space-x-6">
+      <nav className="flex items-center space-x-4 lg:space-x-6 ml-6">
         {links.map((link) => (
           <Link
             key={link.href}
