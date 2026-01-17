@@ -1,0 +1,104 @@
+/**
+ * This ruleset enforces a strict user-ownership security model for the Edoxia-TCG application.
+ *
+ * Core Philosophy:
+ * The fundamental principle is that users have complete control over their own data, and no
+ * user can access, view, or modify the data of another user. This provides a strong
+ * default security posture that prioritizes user privacy.
+ *
+ * Data Structure:
+ * All user-specific data is stored under the top-level `/users` collection. Each user's
+ * data is contained within a document whose ID is the user's Firebase Authentication UID.
+ *   - /users/{userId} -> User's private data document.
+ *
+ * Key Security Decisions:
+ * - User Enumeration is Disabled: Listing documents in the top-level `/users` collection
+ *   is explicitly forbidden to prevent malicious actors from scraping a list of all users.
+ * - Path-Based Security: Rules rely on the `userId` in the document path to grant access,
+ *   which is fast, efficient, and avoids costly database lookups (`get()` calls).
+ * - Self-Creation: A user can create their own user document, but only if the document ID
+ *   matches their own authentication UID.
+ * - Relational Integrity: On creation, the `id` field within the user document must match
+ *   the document's ID (the user's UID) to ensure data consistency. This ID is immutable.
+ *
+ * Denormalization for Authorization:
+ * This ruleset uses path-based security, which is inherently efficient. It also validates
+ * an internal `id` field against the path, ensuring that the document's own data confirms
+ * its ownership, a key denormalization strategy for integrity.
+ *
+ * Structural Segregation:
+ * The data model uses a single `/users` collection for private user data. There is currently
+ * no public data, so this simple structure is sufficient and secure.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------------------------
+    // Helper Functions
+    // ----------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the requesting user's UID matches the provided userId.
+     * This is the core of the ownership model.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks for ownership on an existing document. Used for update and delete
+     * operations to prevent acting on documents that don't exist.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * Validates required authorization fields during user document creation.
+     * In prototyping mode, we only validate fields essential for security and
+     * relational integrity, not the entire data shape.
+     */
+    function isValidUserDocumentOnCreate(userId) {
+      return request.resource.data.id == userId;
+    }
+
+    /**
+     * Ensures critical, identity-related fields cannot be changed after creation.
+     * The user's own ID (`id` field) must be immutable.
+     */
+    function isImmutableUserId() {
+      return request.resource.data.id == resource.data.id;
+    }
+
+
+    // ----------------------------------------------------------------------
+    // Collection Rules
+    // ----------------------------------------------------------------------
+
+    /**
+     * @description Manages access to a user's private data document. Ensures a user can only interact with their own record.
+     * @path /users/{userId}
+     * @allow A signed-in user (UID: 'user123') can (get) their own document at `/users/user123`.
+     * @deny A signed-in user (UID: 'user456') cannot (update) another user's document at `/users/user123`.
+     * @principle Restricts access to a user's own data tree and prevents user enumeration.
+     */
+    match /users/{userId} {
+      // READ Rules
+      allow get: if isOwner(userId);
+      allow list: if false; // CRITICAL: Prevents anyone from listing all users in the app.
+
+      // WRITE Rules
+      allow create: if isOwner(userId) && isValidUserDocumentOnCreate(userId);
+      allow update: if isExistingOwner(userId) && isImmutableUserId();
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}
