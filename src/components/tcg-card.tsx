@@ -41,14 +41,14 @@ export function TCGCard({ card }: TCGCardProps) {
       </div>
 
       {/* Card Info */}
-      <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end bg-gradient-to-t from-black/95 via-black/70 to-transparent px-4 pb-4 pt-8 text-primary-foreground">
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary-foreground/70">
+      <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/40 to-transparent px-4 pb-4 pt-16 text-white">
+        <p className="text-xs font-semibold uppercase tracking-wider text-white/70">
           {type}
         </p>
         <h3 className="font-headline text-2xl font-bold leading-tight tracking-tighter">
           {name}
         </h3>
-        <p className="mt-1 text-sm text-primary-foreground/90">
+        <p className="mt-1 text-sm text-white/90">
           {description}
         </p>
       </div>
