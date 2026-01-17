@@ -110,10 +110,18 @@ export default function AccountPage() {
     if (!user || !auth.currentUser) return;
 
     try {
-      await updateProfile(auth.currentUser, {
+      const profileUpdate: { displayName?: string; photoURL?: string } = {
         displayName: values.displayName,
-        photoURL: values.photoURL,
-      });
+      };
+
+      // The photoURL from a file upload is a base64 data URI, which is too long for Firebase Auth.
+      // We only update the auth profile's photoURL if it's a regular URL (not a data URI).
+      // The data URI will be stored in Firestore, which can handle larger string fields.
+      if (values.photoURL && !values.photoURL.startsWith('data:')) {
+        profileUpdate.photoURL = values.photoURL;
+      }
+
+      await updateProfile(auth.currentUser, profileUpdate);
 
       const userRef = doc(firestore, 'users', user.uid);
       updateDocumentNonBlocking(userRef, {
