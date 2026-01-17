@@ -9,7 +9,7 @@ export function MainNav() {
   const links = [
     { href: '/', label: 'Accueil' },
     { href: '/updates', label: 'Mise à jour' },
-    { href: '/library', label: 'Bibliothèque' },
+    { href: '/library', label: 'Les cartes' },
   ];
 
   return (
