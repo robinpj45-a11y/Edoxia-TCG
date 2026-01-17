@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "card-image-1",
+      "description": "Mystical forest creature",
+      "imageUrl": "https://images.unsplash.com/photo-1665072155564-6a05c28bbaa3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmb3Jlc3QlMjBjcmVhdHVyZXxlbnwwfHx8fDE3Njg2NzU5NzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "forest creature"
+    },
+    {
+      "id": "card-image-2",
+      "description": "A powerful spell being cast",
+      "imageUrl": "https://images.unsplash.com/photo-1624274567304-780bfc30b8be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYWdpYyUyMHNwZWxsfGVufDB8fHx8MTc2ODYzNTM5MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "magic spell"
+    },
+    {
+      "id": "card-image-3",
+      "description": "An ancient artifact",
+      "imageUrl": "https://images.unsplash.com/photo-1695902046953-1bf8caee5ac3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhbmNpZW50JTIwYXJ0aWZhY3R8ZW58MHx8fHwxNzY4NjM2NzQ4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ancient artifact"
+    },
+    {
+      "id": "card-image-4",
+      "description": "A dragon in the mountains",
+      "imageUrl": "https://images.unsplash.com/photo-1768161680835-c8e0cca76c22?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkcmFnb24lMjBtb3VudGFpbnxlbnwwfHx8fDE3Njg1NTI1MDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dragon mountain"
+    },
+    {
+      "id": "card-image-5",
+      "description": "A wizard summoning energy",
+      "imageUrl": "https://images.unsplash.com/photo-1606817613313-43145d46b5c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3aXphcmQlMjBlbmVyZ3l8ZW58MHx8fHwxNzY4Njc1OTczfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wizard energy"
+    }
+  ]
 }
