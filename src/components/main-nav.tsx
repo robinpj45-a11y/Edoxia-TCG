@@ -42,7 +42,7 @@ export function MainNav() {
         </Link>
       </div>
       <div className="ml-auto flex items-center">
-        <button className="p-2" disabled>
+        <button className="" disabled>
           <User className="h-5 w-5 text-muted-foreground" />
           <span className="sr-only">Profil</span>
         </button>
