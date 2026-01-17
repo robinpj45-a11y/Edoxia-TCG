@@ -1,19 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { Gem, Shield, Swords } from 'lucide-react';
 import type { Card } from '@/app/lib/card-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { cn } from '@/lib/utils';
 
 type TCGCardProps = {
   card: Card;
-};
-
-const typeStyles: Record<Card['type'], string> = {
-  Creature: 'border-chart-2',
-  Spell: 'border-accent',
-  Artifact: 'border-border',
 };
 
 export function TCGCard({ card }: TCGCardProps) {
@@ -21,53 +13,44 @@ export function TCGCard({ card }: TCGCardProps) {
   const image = PlaceHolderImages.find((img) => img.id === imageId);
 
   return (
-    <div className="group transform transition-transform duration-300 ease-in-out hover:scale-105 hover:z-10">
-      <div
-        className={cn(
-          'flex h-full flex-col overflow-hidden rounded-lg border-2 bg-card shadow-lg transition-shadow duration-300 group-hover:shadow-primary/20',
-          typeStyles[type]
-        )}
-      >
-        <div className="flex items-center justify-between p-3">
-          <h3 className="font-headline text-lg font-bold">{name}</h3>
-          <div className="flex items-center gap-1 text-lg font-bold">
-            <span className="text-primary">{cost}</span>
-            <Gem className="h-4 w-4 text-primary" />
-          </div>
-        </div>
+    <div className="group relative aspect-[3/4.5] w-full overflow-hidden rounded-xl border-2 border-foreground/20 shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-primary hover:shadow-primary/20">
+      {image && (
+        <Image
+          src={image.imageUrl}
+          alt={name}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-110"
+          data-ai-hint={image.imageHint}
+          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 22vw"
+        />
+      )}
 
-        {image && (
-          <div className="relative w-full" style={{ aspectRatio: '1.5' }}>
-            <Image
-              src={image.imageUrl}
-              alt={image.description}
-              fill
-              className="object-cover"
-              data-ai-hint={image.imageHint}
-              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw"
-            />
+      {/* Stats */}
+      {type === 'Creature' && (
+        <>
+          <div className="absolute top-3 left-3 flex h-10 w-10 items-center justify-center rounded-full bg-destructive/90 text-destructive-foreground shadow-md backdrop-blur-sm">
+            <span className="font-headline text-xl font-bold">{attack}</span>
           </div>
-        )}
+          <div className="absolute top-16 left-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent/90 text-accent-foreground shadow-md backdrop-blur-sm">
+            <span className="font-headline text-xl font-bold">{defense}</span>
+          </div>
+        </>
+      )}
+      <div className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary/90 text-primary-foreground shadow-md backdrop-blur-sm">
+        <span className="font-headline text-xl font-bold">{cost}</span>
+      </div>
 
-        <div className="flex flex-grow flex-col justify-between p-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{type}</p>
-            <p className="mt-1 text-sm">{description}</p>
-          </div>
-        </div>
-
-        {type === 'Creature' && (
-          <div className="mt-auto flex items-center justify-end gap-4 border-t-2 bg-muted/20 p-3">
-            <div className="flex items-center gap-1.5 text-lg font-bold">
-              <Swords className="h-5 w-5 text-destructive" />
-              <span>{attack}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-lg font-bold">
-              <Shield className="h-5 w-5 text-accent" />
-              <span>{defense}</span>
-            </div>
-          </div>
-        )}
+      {/* Card Info */}
+      <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end bg-gradient-to-t from-black/95 via-black/70 to-transparent px-4 pb-4 pt-8 text-primary-foreground">
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary-foreground/70">
+          {type}
+        </p>
+        <h3 className="font-headline text-2xl font-bold leading-tight tracking-tighter">
+          {name}
+        </h3>
+        <p className="mt-1 text-sm text-primary-foreground/90">
+          {description}
+        </p>
       </div>
     </div>
   );
