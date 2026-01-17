@@ -23,8 +23,8 @@ export default function Home() {
         <Image
           src="/edoxia-logo.png"
           alt="Logo Edoxia"
-          width={500}
-          height={500}
+          width={300}
+          height={300}
           className="object-contain"
           priority
         />
