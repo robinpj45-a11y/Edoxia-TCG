@@ -10,9 +10,9 @@
           "type": "string",
           "description": "Unique identifier for the User entity."
         },
-        "username": {
+        "displayName": {
           "type": "string",
-          "description": "The user's username."
+          "description": "The user's display name."
         },
         "email": {
           "type": "string",
@@ -23,11 +23,19 @@
           "type": "string",
           "description": "The date and time the user registered.",
           "format": "date-time"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL of the user's profile picture."
+        },
+        "favoriteCardId": {
+          "type": "string",
+          "description": "The ID of the user's favorite card from their collection."
         }
       },
       "required": [
         "id",
-        "username",
+        "displayName",
         "email",
         "registrationDate"
       ]

@@ -88,7 +88,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
                 setDocumentNonBlocking(userRef, {
                     id: firebaseUser.uid,
                     email: firebaseUser.email,
-                    username: firebaseUser.email.split('@')[0],
+                    displayName: firebaseUser.displayName || firebaseUser.email.split('@')[0],
                     registrationDate: new Date().toISOString(),
                 }, { merge: false });
                 
