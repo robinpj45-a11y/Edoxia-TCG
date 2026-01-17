@@ -2,7 +2,7 @@
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
-import { Firestore, doc, getDoc } from 'firebase/firestore';
+import { Firestore, doc, getDoc, collection } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
 import { setDocumentNonBlocking } from './non-blocking-updates';
@@ -91,6 +91,17 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
                     username: firebaseUser.email.split('@')[0],
                     registrationDate: new Date().toISOString(),
                 }, { merge: false });
+                
+                // Add some starter cards
+                const starterCardIds = ['1', '2', '3']; // Forest Guardian, Arcane Blast, Time-worn Scroll
+                
+                starterCardIds.forEach(cardId => {
+                    const cardRef = doc(firestore, 'users', firebaseUser.uid, 'cardCollection', cardId);
+                    setDocumentNonBlocking(cardRef, {
+                        cardId: cardId,
+                        acquiredAt: new Date().toISOString(),
+                    }, { merge: false });
+                });
             }
         }
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });

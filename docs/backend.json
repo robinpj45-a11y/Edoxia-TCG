@@ -31,6 +31,26 @@
         "email",
         "registrationDate"
       ]
+    },
+    "UserCard": {
+      "title": "User Card",
+      "description": "Represents a card in a user's collection, linking a user to a card.",
+      "type": "object",
+      "properties": {
+        "cardId": {
+          "type": "string",
+          "description": "The ID of the card from the global card list."
+        },
+        "acquiredAt": {
+          "type": "string",
+          "description": "The date and time the user acquired the card.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "cardId",
+        "acquiredAt"
+      ]
     }
   },
   "auth": {
@@ -56,8 +76,28 @@
             }
           ]
         }
+      },
+      {
+        "path": "/users/{userId}/cardCollection/{cardId}",
+        "definition": {
+          "entityName": "UserCard",
+          "schema": {
+            "$ref": "#/backend/entities/UserCard"
+          },
+          "description": "Stores a card in a user's collection. The document ID should match the card's main ID.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The UID of the user who owns the card."
+            },
+            {
+              "name": "cardId",
+              "description": "The unique ID of the card."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "This Firestore structure prioritizes security, scalability, and debuggability by adhering to the principles of Authorization Independence, Structural Segregation, and Access Modeling. User data is stored in a private collection, ensuring that only the authenticated user can access their own information. Specifically, the `/users/{userId}` path provides path-based ownership, making security rules straightforward and efficient. The absence of collaborative data at this stage simplifies the structure, focusing on core user management. This design uses a single collection for users. This structure avoids `get()` calls in rules, enabling atomic operations and easier debugging. Rules will be more robust and maintainable."
+    "reasoning": "This Firestore structure prioritizes security by nesting user-specific data (like their card collection) under their user document. This enables simple and effective path-based security rules. The user's card collection is stored in a subcollection under their user document, which allows for efficient querying and strong security rules based on the path."
   }
 }

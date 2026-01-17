@@ -10,6 +10,7 @@
  * All user-specific data is stored under the top-level `/users` collection. Each user's
  * data is contained within a document whose ID is the user's Firebase Authentication UID.
  *   - /users/{userId} -> User's private data document.
+ *   - /users/{userId}/cardCollection/{cardId} -> A card in the user's collection.
  *
  * Key Security Decisions:
  * - User Enumeration is Disabled: Listing documents in the top-level `/users` collection
@@ -27,8 +28,8 @@
  * its ownership, a key denormalization strategy for integrity.
  *
  * Structural Segregation:
- * The data model uses a single `/users` collection for private user data. There is currently
- * no public data, so this simple structure is sufficient and secure.
+ * The data model uses a single `/users` collection for private user data. The user's card
+ * collection is a subcollection, ensuring data is only loaded when needed.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -99,6 +100,16 @@ service cloud.firestore {
       allow create: if isOwner(userId) && isValidUserDocumentOnCreate(userId);
       allow update: if isExistingOwner(userId) && isImmutableUserId();
       allow delete: if isExistingOwner(userId);
+
+      /**
+       * @description Manages a user's personal card collection.
+       * @path /users/{userId}/cardCollection/{cardId}
+       * @allow A user can fully manage their own card collection.
+       * @deny A user cannot access another user's card collection.
+       */
+      match /cardCollection/{cardId} {
+        allow read, write: if isOwner(userId);
+      }
     }
   }
 }
