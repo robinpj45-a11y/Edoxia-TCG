@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { cards } from '@/app/lib/card-data';
 import type { Card } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 export function CardLibrary() {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
@@ -32,7 +36,12 @@ export function CardLibrary() {
         }}
       >
         <DialogContent className="w-full max-w-md bg-transparent p-0 border-0 shadow-none">
-          {selectedCard && <TCGCard card={selectedCard} />}
+          {selectedCard && (
+            <>
+              <DialogTitle className="sr-only">{selectedCard.name}</DialogTitle>
+              <TCGCard card={selectedCard} />
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </>
