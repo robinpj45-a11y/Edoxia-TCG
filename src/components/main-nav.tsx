@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Gem, User } from 'lucide-react';
+import { User } from 'lucide-react';
 
 export function MainNav() {
   const pathname = usePathname();
@@ -14,7 +14,7 @@ export function MainNav() {
   ];
 
   return (
-    <>
+    <div className="flex w-full items-center justify-between">
       <nav className="flex items-center space-x-4 lg:space-x-6">
         {links.map((link) => (
           <Link
@@ -29,24 +29,12 @@ export function MainNav() {
           </Link>
         ))}
       </nav>
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <Link
-          href="/"
-          className="flex items-center gap-2"
-          aria-label="Page d'accueil Edoxia-TCG"
-        >
-          <Gem className="h-6 w-6 text-primary" />
-          <span className="hidden font-headline text-lg font-bold sm:inline-block">
-            Edoxia-TCG
-          </span>
-        </Link>
-      </div>
-      <div className="ml-auto flex items-center">
+      <div className="flex items-center">
         <button className="" disabled>
           <User className="h-5 w-5 text-muted-foreground" />
           <span className="sr-only">Profil</span>
         </button>
       </div>
-    </>
+    </div>
   );
 }
