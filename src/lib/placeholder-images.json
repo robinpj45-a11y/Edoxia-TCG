@@ -29,6 +29,12 @@
       "description": "A wizard summoning energy",
       "imageUrl": "https://images.unsplash.com/photo-1606817613313-43145d46b5c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3aXphcmQlMjBlbmVyZ3l8ZW58MHx8fHwxNzY4Njc1OTczfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "wizard energy"
+    },
+    {
+      "id": "home-background",
+      "description": "Fantasy landscape for homepage",
+      "imageUrl": "https://images.unsplash.com/photo-1475113548554-5a36f1f523d6?q=80&w=1920&auto=format&fit=crop",
+      "imageHint": "fantasy landscape"
     }
   ]
 }

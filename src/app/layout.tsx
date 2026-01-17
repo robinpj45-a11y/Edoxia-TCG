@@ -22,8 +22,8 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap" rel="stylesheet" />
       </head>
       <body className="min-h-screen bg-background font-body antialiased">
-        <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
-          <div className="container flex h-16 items-center">
+        <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-transparent backdrop-blur-sm">
+          <div className="container relative flex h-16 items-center">
             <MainNav />
           </div>
         </header>

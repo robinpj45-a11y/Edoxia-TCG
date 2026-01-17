@@ -1,31 +1,31 @@
+import { Gem } from 'lucide-react';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+
 export default function Home() {
+  const bgImage = PlaceHolderImages.find((img) => img.id === 'home-background');
+
   return (
-    <main className="container mx-auto px-4 py-8">
-      <header className="mb-12 text-center">
-        <h1 className="font-headline text-5xl font-bold tracking-tighter text-primary md:text-6xl lg:text-7xl">
-          Bienvenue sur Edoxia-TCG
+    <div className="relative h-[calc(100vh-4rem)] w-full">
+      {bgImage ? (
+        <Image
+          src={bgImage.imageUrl}
+          alt="Background"
+          fill
+          className="object-cover"
+          data-ai-hint={bgImage.imageHint}
+          priority
+        />
+      ) : (
+        <div className="h-full w-full bg-black" />
+      )}
+      <div className="absolute inset-0 bg-black/50" />
+      <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
+        <Gem className="h-24 w-24 text-primary" />
+        <h1 className="mt-4 font-headline text-7xl font-bold tracking-tighter md:text-8xl lg:text-9xl">
+          Edoxia-TCG
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-          Toute l'actualité et les mises à jour du jeu.
-        </p>
-      </header>
-      <div className="mx-auto max-w-2xl">
-        <div className="rounded-lg border bg-card p-6 shadow-sm">
-          <h2 className="mb-4 font-headline text-2xl font-bold">
-            Prochaine mise à jour : V1.1
-          </h2>
-          <p className="mb-4 text-muted-foreground">
-            La prochaine mise à jour arrive bientôt avec de nouvelles cartes et
-            des équilibrages !
-          </p>
-          <ul className="list-disc space-y-2 pl-5">
-            <li>10+ nouvelles cartes de créatures.</li>
-            <li>Nouveau type d'artefact : les reliques.</li>
-            <li>Ajustements sur le coût en mana de plusieurs sorts.</li>
-            <li>Améliorations de l'interface et corrections de bugs.</li>
-          </ul>
-        </div>
       </div>
-    </main>
+    </div>
   );
 }
