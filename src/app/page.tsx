@@ -20,14 +20,9 @@ export default function Home() {
       )}
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
-        <Image
-          src="/edoxia-logo.png"
-          alt="Edoxia-TCG Logo"
-          width={500}
-          height={500}
-          className="object-contain"
-          priority
-        />
+        <h1 className="font-headline text-8xl font-bold tracking-tighter text-white drop-shadow-lg">
+          Edoxia-TCG
+        </h1>
       </div>
     </div>
   );
