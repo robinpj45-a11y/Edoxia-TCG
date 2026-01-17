@@ -1,4 +1,3 @@
-import { Gem } from 'lucide-react';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -21,10 +20,14 @@ export default function Home() {
       )}
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
-        <Gem className="h-24 w-24 text-primary" />
-        <h1 className="mt-4 font-headline text-7xl font-bold tracking-tighter md:text-8xl lg:text-9xl">
-          Edoxia-TCG
-        </h1>
+        <Image
+          src="/edoxia-logo.png"
+          alt="Edoxia-TCG Logo"
+          width={500}
+          height={500}
+          className="object-contain"
+          priority
+        />
       </div>
     </div>
   );
