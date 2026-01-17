@@ -35,12 +35,14 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { cards } from '@/app/lib/card-data';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { User as UserIcon } from 'lucide-react';
 
 const formSchema = z.object({
   displayName: z
     .string()
     .min(1, { message: "Le nom d'affichage ne peut pas être vide." }),
-  photoURL: z.string().url({ message: 'URL de photo invalide.' }).or(z.literal('')),
+  photoURL: z.string().optional(),
   favoriteCardId: z.string().optional(),
 });
 
@@ -94,14 +96,15 @@ export default function AccountPage() {
   }, [user, isUserLoading, router]);
 
   useEffect(() => {
-    if (userProfile) {
-      form.reset({
-        displayName: userProfile.displayName || '',
-        photoURL: userProfile.photoURL || '',
-        favoriteCardId: userProfile.favoriteCardId || '',
-      });
+    if (userProfile || user) {
+        const initialPhotoURL = userProfile?.photoURL || user?.photoURL || '';
+        form.reset({
+            displayName: userProfile?.displayName || user?.displayName || '',
+            photoURL: initialPhotoURL,
+            favoriteCardId: userProfile?.favoriteCardId || '',
+        });
     }
-  }, [userProfile, form]);
+  }, [userProfile, user, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !auth.currentUser) return;
@@ -147,6 +150,8 @@ export default function AccountPage() {
   if (!user) {
     return null;
   }
+  
+  const photoUrlValue = form.watch('photoURL');
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -179,10 +184,32 @@ export default function AccountPage() {
               name="photoURL"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>URL de la photo de profil</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://example.com/photo.jpg" {...field} />
-                  </FormControl>
+                  <FormLabel>Photo de profil</FormLabel>
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-24 w-24">
+                      <AvatarImage src={photoUrlValue || undefined} alt="Avatar" />
+                      <AvatarFallback>
+                        <UserIcon className="h-12 w-12" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        className="flex-1"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              field.onChange(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -193,7 +220,7 @@ export default function AccountPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Carte préférée</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ''}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Sélectionnez votre carte préférée" />
