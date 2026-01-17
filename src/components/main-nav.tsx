@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { User } from 'lucide-react';
 
 export function MainNav() {
   const pathname = usePathname();
@@ -14,7 +13,7 @@ export function MainNav() {
   ];
 
   return (
-    <div className="flex w-full items-center justify-between">
+    <div className="flex w-full items-center">
       <nav className="flex items-center space-x-4 lg:space-x-6 ml-6">
         {links.map((link) => (
           <Link
@@ -29,12 +28,6 @@ export function MainNav() {
           </Link>
         ))}
       </nav>
-      <div className="flex items-center">
-        <button className="" disabled>
-          <User className="h-5 w-5 text-muted-foreground" />
-          <span className="sr-only">Profil</span>
-        </button>
-      </div>
     </div>
   );
 }
