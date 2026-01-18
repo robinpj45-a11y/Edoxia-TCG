@@ -22,4 +22,5 @@ export type Card = {
   description: string;
   imageId: string;
   imageUrl?: string;
+  isFramed: boolean;
 };

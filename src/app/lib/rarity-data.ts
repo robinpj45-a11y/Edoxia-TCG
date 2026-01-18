@@ -8,4 +8,6 @@ export const RARITY_DROP_RATES: Record<Rarity, number> = {
   'Légendaire': 0.3,
 };
 
+export const FRAMED_CARD_CHANCE = 0.2;
+
 export const rarityOrder: Rarity[] = ['Commun', 'Rare', 'Super-Rare', 'Ultra-Rare', 'Légendaire'];

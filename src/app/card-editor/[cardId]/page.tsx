@@ -24,6 +24,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 
 const defaultCard: Omit<Card, 'id'> = {
   name: 'Chargement...',
@@ -32,6 +33,7 @@ const defaultCard: Omit<Card, 'id'> = {
   description: '',
   imageId: 'placeholder',
   imageUrl: '',
+  isFramed: false,
 };
 
 export default function CardEditorPage() {
@@ -169,6 +171,7 @@ export default function CardEditorPage() {
         description: cardData.description,
         imageId: cardData.imageId || 'custom-' + cardId,
         imageUrl: cardData.imageUrl,
+        isFramed: cardData.isFramed,
       };
 
       await setDoc(cardRef, cardToSave, { merge: true });
@@ -290,6 +293,23 @@ export default function CardEditorPage() {
                   <SelectItem value="Légendaire">Légendaire</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+              <div className="space-y-0.5">
+                <Label htmlFor="isFramed">Cadre spécial</Label>
+                <p className="text-[0.8rem] text-muted-foreground">
+                  Applique un cadre doré et rend la carte plus rare.
+                </p>
+              </div>
+              <Switch
+                id="isFramed"
+                checked={cardData.isFramed}
+                onCheckedChange={(checked) =>
+                  setCardData((prev) => ({ ...prev, isFramed: checked }))
+                }
+                disabled={isSaving}
+              />
             </div>
 
             <div className="space-y-2">

@@ -108,6 +108,10 @@
         "imageUrl": {
           "type": "string",
           "description": "The URL of the card's illustration, if custom."
+        },
+        "isFramed": {
+          "type": "boolean",
+          "description": "Indicates if the card has a special frame. Framed cards are rarer."
         }
       },
       "required": [
