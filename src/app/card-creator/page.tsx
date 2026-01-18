@@ -46,6 +46,7 @@ export default function CardCreatorPage() {
 
   const [cardData, setCardData] = useState(defaultCard);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading) {
@@ -95,7 +96,7 @@ export default function CardCreatorPage() {
   };
 
   const handleSave = async () => {
-    if (!firestore || !firebaseApp) return;
+    if (!firestore || !firebaseApp || isSaving) return;
 
     if (!imageFile) {
       toast({
@@ -105,6 +106,8 @@ export default function CardCreatorPage() {
       });
       return;
     }
+
+    setIsSaving(true);
 
     try {
       // 1. Get a new card ID
@@ -119,15 +122,18 @@ export default function CardCreatorPage() {
 
       // 3. Prepare card data for Firestore
       const cardToSave: Card = {
-        ...cardData,
         id: newId,
+        name: cardData.name,
+        cost: cardData.cost,
+        type: cardData.type,
+        description: cardData.description,
+        imageId: newId, // Use the unique card ID for the imageId
         imageUrl: downloadURL,
+        ...(cardData.type === 'Creature' && {
+          attack: cardData.attack,
+          defense: cardData.defense,
+        }),
       };
-
-      if (cardToSave.type !== 'Creature') {
-        delete cardToSave.attack;
-        delete cardToSave.defense;
-      }
 
       // 4. Save card data to Firestore
       await setDoc(newCardRef, cardToSave);
@@ -155,6 +161,8 @@ export default function CardCreatorPage() {
           error.message ||
           'Impossible de sauvegarder la carte. Vérifiez la console pour plus de détails.',
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -197,6 +205,7 @@ export default function CardCreatorPage() {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
+                disabled={isSaving}
               />
             </div>
 
@@ -207,12 +216,13 @@ export default function CardCreatorPage() {
                 name="name"
                 value={cardData.name}
                 onChange={handleInputChange}
+                disabled={isSaving}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="type">Type</Label>
-              <Select onValueChange={handleTypeChange} value={cardData.type}>
+              <Select onValueChange={handleTypeChange} value={cardData.type} disabled={isSaving}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez un type" />
                 </SelectTrigger>
@@ -232,6 +242,7 @@ export default function CardCreatorPage() {
                 type="number"
                 value={cardData.cost}
                 onChange={handleInputChange}
+                disabled={isSaving}
               />
             </div>
 
@@ -245,6 +256,7 @@ export default function CardCreatorPage() {
                     type="number"
                     value={cardData.attack}
                     onChange={handleInputChange}
+                    disabled={isSaving}
                   />
                 </div>
                 <div className="space-y-2">
@@ -255,6 +267,7 @@ export default function CardCreatorPage() {
                     type="number"
                     value={cardData.defense}
                     onChange={handleInputChange}
+                    disabled={isSaving}
                   />
                 </div>
               </>
@@ -267,11 +280,12 @@ export default function CardCreatorPage() {
                 name="description"
                 value={cardData.description}
                 onChange={handleInputChange}
+                disabled={isSaving}
               />
             </div>
 
-            <Button onClick={handleSave} className="w-full">
-              Sauvegarder la carte
+            <Button onClick={handleSave} className="w-full" disabled={isSaving}>
+              {isSaving ? 'Sauvegarde en cours...' : 'Sauvegarder la carte'}
             </Button>
           </CardContent>
         </UICard>
