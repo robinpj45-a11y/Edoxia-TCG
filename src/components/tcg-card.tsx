@@ -31,7 +31,6 @@ const rarityTextStyles: Record<Rarity, string> = {
 export function TCGCard({ card, imageUrl: previewImageUrl }: TCGCardProps) {
   const {
     name,
-    cost,
     type,
     description,
     imageId,
@@ -63,11 +62,6 @@ export function TCGCard({ card, imageUrl: previewImageUrl }: TCGCardProps) {
           sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 22vw"
         />
       )}
-
-      {/* Stats */}
-      <div className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary/90 text-primary-foreground shadow-md backdrop-blur-sm">
-        <span className="font-headline text-xl font-bold">{cost}</span>
-      </div>
 
       {/* Card Info */}
       <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/40 to-transparent px-4 pb-4 pt-16 text-white">

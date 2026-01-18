@@ -17,7 +17,6 @@ export type Rarity =
 export type Card = {
   id: string;
   name: string;
-  cost: number;
   type: CardType;
   rarity: Rarity;
   description: string;

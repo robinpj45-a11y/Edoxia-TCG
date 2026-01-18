@@ -25,10 +25,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-const defaultCard: Card = {
-  id: '',
+const defaultCard: Omit<Card, 'id'> = {
   name: 'Chargement...',
-  cost: 0,
   type: 'Objet',
   rarity: 'Commun',
   description: '',
@@ -45,7 +43,7 @@ export default function CardEditorPage() {
 
   const cardId = params.cardId as string;
 
-  const [cardData, setCardData] = useState<Card>(defaultCard);
+  const [cardData, setCardData] = useState<Card>({ ...defaultCard, id: cardId });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -87,7 +85,7 @@ export default function CardEditorPage() {
     const { name, value } = e.target;
     setCardData((prev) => ({
       ...prev,
-      [name]: name === 'cost' ? parseInt(value) || 0 : value,
+      [name]: value,
     }));
   };
 
@@ -166,7 +164,6 @@ export default function CardEditorPage() {
       const cardToSave: Card = {
         id: cardId,
         name: cardData.name,
-        cost: cardData.cost,
         type: cardData.type,
         rarity: cardData.rarity,
         description: cardData.description,
@@ -293,18 +290,6 @@ export default function CardEditorPage() {
                   <SelectItem value="Légendaire">Légendaire</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="cost">Coût</Label>
-              <Input
-                id="cost"
-                name="cost"
-                type="number"
-                value={cardData.cost}
-                onChange={handleInputChange}
-                disabled={isSaving}
-              />
             </div>
 
             <div className="space-y-2">

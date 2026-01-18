@@ -27,7 +27,6 @@ import {
 
 const defaultCard = {
   name: 'Nom de la carte',
-  cost: 1,
   type: 'Objet' as CardType,
   rarity: 'Commun' as Rarity,
   description: 'Description de la carte.',
@@ -66,7 +65,7 @@ export default function CardCreatorPage() {
     const { name, value } = e.target;
     setCardData((prev) => ({
       ...prev,
-      [name]: name === 'cost' ? parseInt(value) || 0 : value,
+      [name]: value,
     }));
   };
 
@@ -148,7 +147,6 @@ export default function CardCreatorPage() {
       const cardToSave: Card = {
         id: newId,
         name: cardData.name,
-        cost: cardData.cost,
         type: cardData.type,
         rarity: cardData.rarity,
         description: cardData.description,
@@ -277,18 +275,6 @@ export default function CardCreatorPage() {
                   <SelectItem value="Légendaire">Légendaire</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="cost">Coût</Label>
-              <Input
-                id="cost"
-                name="cost"
-                type="number"
-                value={cardData.cost}
-                onChange={handleInputChange}
-                disabled={isSaving}
-              />
             </div>
 
             <div className="space-y-2">

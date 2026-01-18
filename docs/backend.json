@@ -73,10 +73,6 @@
           "type": "string",
           "description": "The name of the card."
         },
-        "cost": {
-          "type": "number",
-          "description": "The mana cost of the card."
-        },
         "type": {
           "type": "string",
           "description": "The type of the card.",
@@ -117,7 +113,6 @@
       "required": [
         "id",
         "name",
-        "cost",
         "type",
         "description",
         "rarity"
