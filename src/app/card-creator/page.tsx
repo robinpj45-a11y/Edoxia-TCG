@@ -278,8 +278,7 @@ export default function CardCreatorPage() {
                 <SelectContent>
                   <SelectItem value="Commun">Commun</SelectItem>
                   <SelectItem value="Rare">Rare</SelectItem>
-                  <SelectItem value="Super-Rare">Super-Rare</SelectItem>
-                  <SelectItem value="Ultra-Rare">Ultra-Rare</SelectItem>
+                  <SelectItem value="Épique">Épique</SelectItem>
                   <SelectItem value="Légendaire">Légendaire</SelectItem>
                 </SelectContent>
               </Select>

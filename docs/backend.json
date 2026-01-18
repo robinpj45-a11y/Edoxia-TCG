@@ -97,8 +97,7 @@
           "enum": [
             "Commun",
             "Rare",
-            "Super-Rare",
-            "Ultra-Rare",
+            "Épique",
             "Légendaire"
           ]
         },

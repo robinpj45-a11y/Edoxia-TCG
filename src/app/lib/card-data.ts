@@ -15,8 +15,7 @@ export type CardType =
 export type Rarity =
   | 'Commun'
   | 'Rare'
-  | 'Super-Rare'
-  | 'Ultra-Rare'
+  | 'Épique'
   | 'Légendaire';
 
 export type Card = {

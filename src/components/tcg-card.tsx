@@ -13,18 +13,15 @@ type TCGCardProps = {
 const rarityStyles: Record<Rarity, string> = {
   Commun: 'border-foreground/20 hover:border-foreground/80 hover:shadow-foreground/20',
   Rare: 'border-sky-400 shadow-sky-400/20 hover:shadow-sky-400/40',
-  'Super-Rare':
+  'Épique':
     'border-fuchsia-500 shadow-fuchsia-500/20 hover:shadow-fuchsia-500/40',
-  'Ultra-Rare':
-    'border-amber-400 shadow-amber-400/20 hover:shadow-amber-400/40',
   Légendaire: 'border-red-600 shadow-red-600/30 hover:shadow-red-600/50',
 };
 
 const rarityTextStyles: Record<Rarity, string> = {
   Commun: 'text-white/70',
   Rare: 'text-sky-400',
-  'Super-Rare': 'text-fuchsia-500',
-  'Ultra-Rare': 'text-amber-400',
+  'Épique': 'text-fuchsia-500',
   Légendaire: 'text-red-500 font-bold',
 };
 
