@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useFirebaseApp } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection, doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import type { Card } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
@@ -25,7 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { setDocumentNonBlocking } from '@/firebase';
 
 const defaultCard = {
   name: 'Nom de la carte',
@@ -136,8 +135,8 @@ export default function CardCreatorPage() {
         }),
       };
 
-      // 4. Save card data to Firestore (non-blocking)
-      setDocumentNonBlocking(newCardRef, cardToSave, { merge: false });
+      // 4. Save card data to Firestore
+      await setDoc(newCardRef, cardToSave);
 
       toast({
         title: 'Carte sauvegardée !',
