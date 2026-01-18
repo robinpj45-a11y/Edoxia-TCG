@@ -1,3 +1,12 @@
+export type CardType =
+  | 'Objet'
+  | 'Animal'
+  | 'Sport'
+  | 'Métier'
+  | 'Matière'
+  | 'Moment de vie'
+  | 'Fantastique';
+
 export type Rarity =
   | 'Commun'
   | 'Rare'
@@ -9,9 +18,7 @@ export type Card = {
   id: string;
   name: string;
   cost: number;
-  attack?: number;
-  defense?: number;
-  type: 'Creature' | 'Spell' | 'Artifact';
+  type: CardType;
   rarity: Rarity;
   description: string;
   imageId: string;

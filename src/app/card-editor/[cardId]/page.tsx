@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import type { Card, Rarity } from '@/app/lib/card-data';
+import type { Card, Rarity, CardType } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -29,9 +29,7 @@ const defaultCard: Card = {
   id: '',
   name: 'Chargement...',
   cost: 0,
-  attack: 0,
-  defense: 0,
-  type: 'Creature',
+  type: 'Objet',
   rarity: 'Commun',
   description: '',
   imageId: 'placeholder',
@@ -57,7 +55,8 @@ export default function CardEditorPage() {
     return doc(firestore, 'cards', cardId);
   }, [firestore, cardId]);
 
-  const { data: fetchedCard, isLoading: isCardLoading } = useDoc<Card>(cardDocRef);
+  const { data: fetchedCard, isLoading: isCardLoading } =
+    useDoc<Card>(cardDocRef);
 
   useEffect(() => {
     if (!isUserLoading) {
@@ -88,10 +87,7 @@ export default function CardEditorPage() {
     const { name, value } = e.target;
     setCardData((prev) => ({
       ...prev,
-      [name]:
-        name === 'cost' || name === 'attack' || name === 'defense'
-          ? parseInt(value) || 0
-          : value,
+      [name]: name === 'cost' ? parseInt(value) || 0 : value,
     }));
   };
 
@@ -107,7 +103,7 @@ export default function CardEditorPage() {
       img.onload = () => {
         const MAX_WIDTH = 800;
         const canvas = document.createElement('canvas');
-        
+
         const ratio = MAX_WIDTH / img.width;
         canvas.width = MAX_WIDTH;
         canvas.height = img.height * ratio;
@@ -120,12 +116,13 @@ export default function CardEditorPage() {
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
         if (dataUrl.length > 1048487) {
-            toast({
-                variant: 'destructive',
-                title: 'Image trop lourde',
-                description: 'Même après optimisation, l\'image est trop volumineuse. Essayez une autre image.'
-            })
-            return;
+          toast({
+            variant: 'destructive',
+            title: 'Image trop lourde',
+            description:
+              "Même après optimisation, l'image est trop volumineuse. Essayez une autre image.",
+          });
+          return;
         }
 
         setCardData((prev) => ({ ...prev, imageUrl: dataUrl }));
@@ -135,7 +132,7 @@ export default function CardEditorPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleTypeChange = (value: 'Creature' | 'Spell' | 'Artifact') => {
+  const handleTypeChange = (value: CardType) => {
     setCardData((prev) => ({
       ...prev,
       type: value,
@@ -166,7 +163,7 @@ export default function CardEditorPage() {
     try {
       const cardRef = doc(firestore, 'cards', cardId);
 
-      const cardToSave: Omit<Card, 'attack' | 'defense'> & { attack?: number; defense?: number; } = {
+      const cardToSave: Card = {
         id: cardId,
         name: cardData.name,
         cost: cardData.cost,
@@ -177,14 +174,6 @@ export default function CardEditorPage() {
         imageUrl: cardData.imageUrl,
       };
 
-      if (cardData.type === 'Creature') {
-        cardToSave.attack = cardData.attack;
-        cardToSave.defense = cardData.defense;
-      } else {
-        delete cardToSave.attack;
-        delete cardToSave.defense;
-      }
-      
       await setDoc(cardRef, cardToSave, { merge: true });
 
       toast({
@@ -193,7 +182,6 @@ export default function CardEditorPage() {
       });
 
       router.push('/library');
-
     } catch (error: any) {
       console.error('Error saving card:', error);
       toast({
@@ -267,21 +255,33 @@ export default function CardEditorPage() {
 
             <div className="space-y-2">
               <Label htmlFor="type">Type</Label>
-              <Select onValueChange={handleTypeChange} value={cardData.type} disabled={isSaving}>
+              <Select
+                onValueChange={handleTypeChange}
+                value={cardData.type}
+                disabled={isSaving}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez un type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Creature">Créature</SelectItem>
-                  <SelectItem value="Spell">Sort</SelectItem>
-                  <SelectItem value="Artifact">Artefact</SelectItem>
+                  <SelectItem value="Objet">Objet</SelectItem>
+                  <SelectItem value="Animal">Animal</SelectItem>
+                  <SelectItem value="Sport">Sport</SelectItem>
+                  <SelectItem value="Métier">Métier</SelectItem>
+                  <SelectItem value="Matière">Matière</SelectItem>
+                  <SelectItem value="Moment de vie">Moment de vie</SelectItem>
+                  <SelectItem value="Fantastique">Fantastique</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="rarity">Rareté</Label>
-              <Select onValueChange={handleRarityChange} value={cardData.rarity} disabled={isSaving}>
+              <Select
+                onValueChange={handleRarityChange}
+                value={cardData.rarity}
+                disabled={isSaving}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez une rareté" />
                 </SelectTrigger>
@@ -307,33 +307,6 @@ export default function CardEditorPage() {
               />
             </div>
 
-            {cardData.type === 'Creature' && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="attack">Attaque</Label>
-                  <Input
-                    id="attack"
-                    name="attack"
-                    type="number"
-                    value={cardData.attack}
-                    onChange={handleInputChange}
-                    disabled={isSaving}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="defense">Défense</Label>
-                  <Input
-                    id="defense"
-                    name="defense"
-                    type="number"
-                    value={cardData.defense}
-                    onChange={handleInputChange}
-                    disabled={isSaving}
-                  />
-                </div>
-              </>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -345,8 +318,14 @@ export default function CardEditorPage() {
               />
             </div>
 
-            <Button onClick={handleSave} className="w-full" disabled={isSaving}>
-              {isSaving ? 'Sauvegarde en cours...' : 'Sauvegarder les modifications'}
+            <Button
+              onClick={handleSave}
+              className="w-full"
+              disabled={isSaving}
+            >
+              {isSaving
+                ? 'Sauvegarde en cours...'
+                : 'Sauvegarder les modifications'}
             </Button>
           </CardContent>
         </UICard>

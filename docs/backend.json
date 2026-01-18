@@ -77,21 +77,17 @@
           "type": "number",
           "description": "The mana cost of the card."
         },
-        "attack": {
-          "type": "number",
-          "description": "The attack power of the card (for Creatures)."
-        },
-        "defense": {
-          "type": "number",
-          "description": "The defense value of the card (for Creatures)."
-        },
         "type": {
           "type": "string",
           "description": "The type of the card.",
           "enum": [
-            "Creature",
-            "Spell",
-            "Artifact"
+            "Objet",
+            "Animal",
+            "Sport",
+            "Métier",
+            "Matière",
+            "Moment de vie",
+            "Fantastique"
           ]
         },
         "rarity": {

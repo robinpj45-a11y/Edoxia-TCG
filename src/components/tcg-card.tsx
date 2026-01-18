@@ -32,8 +32,6 @@ export function TCGCard({ card, imageUrl: previewImageUrl }: TCGCardProps) {
   const {
     name,
     cost,
-    attack,
-    defense,
     type,
     description,
     imageId,
@@ -67,16 +65,6 @@ export function TCGCard({ card, imageUrl: previewImageUrl }: TCGCardProps) {
       )}
 
       {/* Stats */}
-      {type === 'Creature' && (
-        <>
-          <div className="absolute top-3 left-3 flex h-10 w-10 items-center justify-center rounded-full bg-destructive/90 text-destructive-foreground shadow-md backdrop-blur-sm">
-            <span className="font-headline text-xl font-bold">{attack}</span>
-          </div>
-          <div className="absolute top-16 left-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent/90 text-accent-foreground shadow-md backdrop-blur-sm">
-            <span className="font-headline text-xl font-bold">{defense}</span>
-          </div>
-        </>
-      )}
       <div className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary/90 text-primary-foreground shadow-md backdrop-blur-sm">
         <span className="font-headline text-xl font-bold">{cost}</span>
       </div>
