@@ -6,21 +6,25 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 type TCGCardProps = {
   card: Card;
+  imageUrl?: string;
 };
 
-export function TCGCard({ card }: TCGCardProps) {
+export function TCGCard({ card, imageUrl }: TCGCardProps) {
   const { name, cost, attack, defense, type, description, imageId } = card;
   const image = PlaceHolderImages.find((img) => img.id === imageId);
 
+  const displayImageUrl = imageUrl || image?.imageUrl;
+  const displayImageHint = imageUrl ? 'custom upload' : image?.imageHint;
+
   return (
     <div className="group relative aspect-[3/4.5] w-full overflow-hidden rounded-xl border-2 border-foreground/20 shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-primary hover:shadow-primary/20">
-      {image && (
+      {displayImageUrl && (
         <Image
-          src={image.imageUrl}
+          src={displayImageUrl}
           alt={name}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-110"
-          data-ai-hint={image.imageHint}
+          data-ai-hint={displayImageHint}
           sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 22vw"
         />
       )}

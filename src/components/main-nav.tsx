@@ -43,6 +43,19 @@ export function MainNav() {
             Ma collection
           </Link>
         )}
+        {user && user.email === 'test@edoxia.com' && (
+          <Link
+            href="/card-creator"
+            className={cn(
+              'text-sm font-medium transition-colors hover:text-primary',
+              pathname === '/card-creator'
+                ? 'text-primary'
+                : 'text-muted-foreground'
+            )}
+          >
+            Création de carte
+          </Link>
+        )}
       </nav>
       <div className="ml-auto flex items-center space-x-4">
         <AuthButtons />
