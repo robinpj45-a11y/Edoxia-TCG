@@ -11,7 +11,7 @@ type TCGCardProps = {
 };
 
 const rarityStyles: Record<Rarity, string> = {
-  Commun: 'border-foreground/20 hover:border-primary hover:shadow-primary/20',
+  Commun: 'border-foreground/20 hover:border-foreground/80 hover:shadow-foreground/20',
   Rare: 'border-sky-400 shadow-sky-400/20 hover:shadow-sky-400/40',
   'Super-Rare':
     'border-fuchsia-500 shadow-fuchsia-500/20 hover:shadow-fuchsia-500/40',
