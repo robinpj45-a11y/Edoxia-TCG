@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useFirebaseApp } from '@/firebase';
 import { collection, doc, setDoc } from 'firebase/firestore';
@@ -47,6 +47,7 @@ export default function CardCreatorPage() {
   const [cardData, setCardData] = useState(defaultCard);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isUserLoading) {
@@ -78,10 +79,9 @@ export default function CardCreatorPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file); // Save the file object for upload
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        // For live preview
         setCardData((prev) => ({ ...prev, imageUrl: reader.result as string }));
       };
       reader.readAsDataURL(file);
@@ -96,35 +96,38 @@ export default function CardCreatorPage() {
   };
 
   const handleSave = async () => {
-    if (!firestore || !firebaseApp || isSaving) return;
-
-    if (!imageFile) {
-      toast({
-        variant: 'destructive',
-        title: 'Erreur',
-        description: 'Veuillez sélectionner une illustration pour la carte.',
-      });
+    if (!firestore || !firebaseApp || !imageFile || isSaving) {
+      if (!imageFile) {
+        toast({
+          variant: 'destructive',
+          title: 'Erreur',
+          description: 'Veuillez sélectionner une illustration pour la carte.',
+        });
+      }
       return;
     }
 
     setIsSaving(true);
 
     try {
+      // 1. Create a new document reference to get a unique ID
       const newCardRef = doc(collection(firestore, 'cards'));
       const newId = newCardRef.id;
 
+      // 2. Upload the image to Firebase Storage
       const storage = getStorage(firebaseApp);
       const imageRef = ref(storage, `card-images/${newId}`);
       await uploadBytes(imageRef, imageFile);
       const downloadURL = await getDownloadURL(imageRef);
 
-      const cardToSave: any = {
+      // 3. Prepare the final card data object
+      const cardToSave: Omit<Card, 'attack' | 'defense'> & { attack?: number; defense?: number; } = {
         id: newId,
         name: cardData.name,
         cost: cardData.cost,
         type: cardData.type,
         description: cardData.description,
-        imageId: newId,
+        imageId: newId, // Use newId as a reference, though imageUrl will be primary
         imageUrl: downloadURL,
       };
 
@@ -132,32 +135,33 @@ export default function CardCreatorPage() {
         cardToSave.attack = cardData.attack;
         cardToSave.defense = cardData.defense;
       }
-
+      
+      // 4. Save the card data to Firestore
       await setDoc(newCardRef, cardToSave);
 
+      // 5. Success feedback and form reset
       toast({
         title: 'Carte sauvegardée !',
-        description: `${cardToSave.name} a été ajoutée à la base de données.`,
+        description: `${cardData.name} a été ajoutée à la base de données.`,
       });
 
       setCardData(defaultCard);
       setImageFile(null);
-      
-      const fileInput = document.getElementById('imageUrl') as HTMLInputElement;
-      if (fileInput) {
-        fileInput.value = '';
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
       }
 
     } catch (error: any) {
       console.error('Error saving card:', error);
       toast({
         variant: 'destructive',
-        title: 'Erreur',
+        title: 'Erreur lors de la sauvegarde',
         description:
           error.message ||
           'Impossible de sauvegarder la carte. Vérifiez la console pour plus de détails.',
       });
     } finally {
+      // 6. ALWAYS ensure the saving state is reset
       setIsSaving(false);
     }
   };
@@ -194,14 +198,15 @@ export default function CardCreatorPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="imageUrl">Illustration</Label>
+              <Label htmlFor="imageFile">Illustration</Label>
               <Input
-                id="imageUrl"
-                name="imageUrl"
+                id="imageFile"
+                name="imageFile"
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
                 disabled={isSaving}
+                ref={fileInputRef}
               />
             </div>
 
