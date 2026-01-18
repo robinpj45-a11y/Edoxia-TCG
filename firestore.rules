@@ -126,11 +126,11 @@ service cloud.firestore {
     /**
      * @description Manages the global collection of game cards.
      * @path /cards/{cardId}
-     * @allow All signed-in users can read the cards.
+     * @allow All users (including unauthenticated ones) can read the cards.
      * @allow Only administrators can create, update, or delete cards.
      */
     match /cards/{cardId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow write: if isAdmin();
     }
   }
