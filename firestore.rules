@@ -11,6 +11,7 @@
  * data is contained within a document whose ID is the user's Firebase Authentication UID.
  *   - /users/{userId} -> User's private data document.
  *   - /users/{userId}/cardCollection/{cardId} -> A card in the user's collection.
+ *   - /cards/{cardId} -> A global game card, readable by all, writable by admins.
  *
  * Key Security Decisions:
  * - User Enumeration is Disabled: Listing documents in the top-level `/users` collection
@@ -21,6 +22,8 @@
  *   matches their own authentication UID.
  * - Relational Integrity: On creation, the `id` field within the user document must match
  *   the document's ID (the user's UID) to ensure data consistency. This ID is immutable.
+ * - Admin-Only Writes: The global `/cards` collection can only be written to by a user
+ *   with the specific admin email, preventing unauthorized game content changes.
  *
  * Denormalization for Authorization:
  * This ruleset uses path-based security, which is inherently efficient. It also validates
@@ -29,7 +32,8 @@
  *
  * Structural Segregation:
  * The data model uses a single `/users` collection for private user data. The user's card
- * collection is a subcollection, ensuring data is only loaded when needed.
+ * collection is a subcollection, ensuring data is only loaded when needed. The global
+ * `/cards` collection is separate, allowing public read access without exposing user data.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -52,6 +56,13 @@ service cloud.firestore {
      */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks if the authenticated user is an administrator.
+     */
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'test@edoxia.com';
     }
 
     /**
@@ -110,6 +121,17 @@ service cloud.firestore {
       match /cardCollection/{cardId} {
         allow read, write: if isOwner(userId);
       }
+    }
+
+    /**
+     * @description Manages the global collection of game cards.
+     * @path /cards/{cardId}
+     * @allow All signed-in users can read the cards.
+     * @allow Only administrators can create, update, or delete cards.
+     */
+    match /cards/{cardId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
   }
 }

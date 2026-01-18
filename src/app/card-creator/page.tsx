@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, setDoc } from 'firebase/firestore';
 import type { Card } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import { Input } from '@/components/ui/input';
@@ -24,8 +25,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-const defaultCard: Card = {
-  id: 'new-card',
+const defaultCard: Omit<Card, 'id'> = {
   name: 'Nom de la carte',
   cost: 1,
   attack: 1,
@@ -39,8 +39,9 @@ export default function CardCreatorPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
+  const firestore = useFirestore();
 
-  const [cardData, setCardData] = useState<Card>(defaultCard);
+  const [cardData, setCardData] = useState<Omit<Card, 'id'>>(defaultCard);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
@@ -88,18 +89,41 @@ export default function CardCreatorPage() {
     }
   };
 
-  const handleSave = () => {
-    // In a real app, you would save this to the database.
-    // For now, we'll just log it.
-    console.log('Saving card:', {
-      ...cardData,
-      image: imagePreview ? 'has_image' : 'no_image',
-    });
-    toast({
-      title: 'Carte sauvegardée (simulation)',
-      description:
-        'Les données de la carte ont été enregistrées dans la console.',
-    });
+  const handleSave = async () => {
+    if (!firestore) return;
+
+    try {
+      const newCardRef = doc(collection(firestore, 'cards'));
+      const newId = newCardRef.id;
+
+      const cardToSave: Card = {
+        ...cardData,
+        id: newId,
+        imageUrl: imagePreview || undefined,
+      };
+
+      if (cardToSave.type !== 'Creature') {
+        delete cardToSave.attack;
+        delete cardToSave.defense;
+      }
+
+      await setDoc(newCardRef, cardToSave);
+
+      toast({
+        title: 'Carte sauvegardée !',
+        description: `${cardToSave.name} a été ajoutée à la base de données.`,
+      });
+      // Reset form
+      setCardData(defaultCard);
+      setImagePreview(null);
+    } catch (error: any) {
+      console.error('Error saving card:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: 'Impossible de sauvegarder la carte. Vérifiez la console pour plus de détails.',
+      });
+    }
   };
 
   if (isUserLoading || !user || user.email !== 'test@edoxia.com') {
@@ -109,6 +133,11 @@ export default function CardCreatorPage() {
       </div>
     );
   }
+  
+  const previewCard: Card = {
+    ...cardData,
+    id: 'preview',
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -218,7 +247,7 @@ export default function CardCreatorPage() {
         <div className="flex flex-col items-center">
           <h2 className="text-2xl font-bold mb-4 font-headline">Aperçu</h2>
           <div className="w-full max-w-sm">
-            <TCGCard card={cardData} imageUrl={imagePreview || undefined} />
+            <TCGCard card={previewCard} imageUrl={imagePreview || undefined} />
           </div>
         </div>
       </div>

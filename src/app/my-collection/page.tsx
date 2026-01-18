@@ -2,10 +2,10 @@
 
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
-import { cards } from '@/app/lib/card-data';
+import type { Card } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 
 export default function MyCollectionPage() {
@@ -13,6 +13,15 @@ export default function MyCollectionPage() {
   const firestore = useFirestore();
   const router = useRouter();
 
+  // Fetch all cards from the global collection
+  const allCardsCollectionRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'cards');
+  }, [firestore]);
+  const { data: allCards, isLoading: isLoadingAllCards } = useCollection<Card>(allCardsCollectionRef);
+
+
+  // Fetch user's owned card IDs
   const userCardsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return collection(firestore, 'users', user.uid, 'cardCollection');
@@ -26,7 +35,15 @@ export default function MyCollectionPage() {
     }
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || isLoadingCollection) {
+  const ownedCards = useMemo(() => {
+    if (!allCards || !userCardDocs) return [];
+    const ownedCardIds = userCardDocs.map((c) => c.cardId);
+    return allCards.filter((card) => ownedCardIds.includes(card.id));
+  }, [allCards, userCardDocs]);
+
+  const isLoading = isUserLoading || isLoadingCollection || isLoadingAllCards;
+
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <p>Chargement de votre collection...</p>
@@ -37,9 +54,6 @@ export default function MyCollectionPage() {
   if (!user) {
     return null;
   }
-
-  const ownedCardIds = userCardDocs?.map((c) => c.cardId) || [];
-  const ownedCards = cards.filter((card) => ownedCardIds.includes(card.id));
 
   return (
     <div className="container mx-auto px-4 py-8">

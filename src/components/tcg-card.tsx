@@ -9,12 +9,12 @@ type TCGCardProps = {
   imageUrl?: string;
 };
 
-export function TCGCard({ card, imageUrl }: TCGCardProps) {
-  const { name, cost, attack, defense, type, description, imageId } = card;
+export function TCGCard({ card, imageUrl: previewImageUrl }: TCGCardProps) {
+  const { name, cost, attack, defense, type, description, imageId, imageUrl: cardImageUrl } = card;
   const image = PlaceHolderImages.find((img) => img.id === imageId);
 
-  const displayImageUrl = imageUrl || image?.imageUrl;
-  const displayImageHint = imageUrl ? 'custom upload' : image?.imageHint;
+  const displayImageUrl = previewImageUrl || cardImageUrl || image?.imageUrl;
+  const displayImageHint = previewImageUrl || cardImageUrl ? 'custom upload' : image?.imageHint;
 
   return (
     <div className="group relative aspect-[3/4.5] w-full overflow-hidden rounded-xl border-2 border-foreground/20 shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-primary hover:shadow-primary/20">

@@ -59,6 +59,61 @@
         "cardId",
         "acquiredAt"
       ]
+    },
+    "Card": {
+      "title": "Card",
+      "description": "Represents a single playable card in the Edoxia-TCG.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Card entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the card."
+        },
+        "cost": {
+          "type": "number",
+          "description": "The mana cost of the card."
+        },
+        "attack": {
+          "type": "number",
+          "description": "The attack power of the card (for Creatures)."
+        },
+        "defense": {
+          "type": "number",
+          "description": "The defense value of the card (for Creatures)."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of the card.",
+          "enum": [
+            "Creature",
+            "Spell",
+            "Artifact"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "The card's description or effect text."
+        },
+        "imageId": {
+          "type": "string",
+          "description": "The ID of the placeholder image for the card."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "The URL of the card's illustration, if custom."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "cost",
+        "type",
+        "description"
+      ]
     }
   },
   "auth": {
@@ -104,8 +159,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/cards/{cardId}",
+        "definition": {
+          "entityName": "Card",
+          "schema": {
+            "$ref": "#/backend/entities/Card"
+          },
+          "description": "Stores all available cards in the game.",
+          "params": [
+            {
+              "name": "cardId",
+              "description": "The unique identifier of the card."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "This Firestore structure prioritizes security by nesting user-specific data (like their card collection) under their user document. This enables simple and effective path-based security rules. The user's card collection is stored in a subcollection under their user document, which allows for efficient querying and strong security rules based on the path."
+    "reasoning": "This Firestore structure prioritizes security by nesting user-specific data (like their card collection) under their user document. This enables simple and effective path-based security rules. The user's card collection is stored in a subcollection under their user document, which allows for efficient querying and strong security rules based on the path. A global 'cards' collection stores all game cards, readable by all and writable only by admins."
   }
 }

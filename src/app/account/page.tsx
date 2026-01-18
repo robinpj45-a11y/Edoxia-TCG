@@ -34,7 +34,7 @@ import { doc, collection } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { cards } from '@/app/lib/card-data';
+import type { Card } from '@/app/lib/card-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User as UserIcon } from 'lucide-react';
 
@@ -66,6 +66,12 @@ export default function AccountPage() {
 
   const { data: userProfile, isLoading: isLoadingProfile } = useDoc<UserProfile>(userDocRef);
 
+  const allCardsCollectionRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'cards');
+  }, [firestore]);
+  const { data: allCards, isLoading: isLoadingAllCards } = useCollection<Card>(allCardsCollectionRef);
+
   const userCardsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return collection(firestore, 'users', user.uid, 'cardCollection');
@@ -75,10 +81,10 @@ export default function AccountPage() {
     useCollection<{ cardId: string }>(userCardsCollectionRef);
 
   const ownedCards = useMemo(() => {
-    if (!userCardDocs) return [];
+    if (!userCardDocs || !allCards) return [];
     const ownedCardIds = userCardDocs.map((c) => c.cardId);
-    return cards.filter((card) => ownedCardIds.includes(card.id));
-  }, [userCardDocs]);
+    return allCards.filter((card) => ownedCardIds.includes(card.id));
+  }, [userCardDocs, allCards]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -114,11 +120,10 @@ export default function AccountPage() {
         displayName: values.displayName,
       };
 
-      // The photoURL from a file upload is a base64 data URI, which is too long for Firebase Auth.
-      // We only update the auth profile's photoURL if it's a regular URL (not a data URI).
-      // The data URI will be stored in Firestore, which can handle larger string fields.
       if (values.photoURL && !values.photoURL.startsWith('data:')) {
         profileUpdate.photoURL = values.photoURL;
+      } else if (!values.photoURL) {
+        profileUpdate.photoURL = '';
       }
 
       await updateProfile(auth.currentUser, profileUpdate);
@@ -145,7 +150,7 @@ export default function AccountPage() {
     }
   }
 
-  const isLoading = isUserLoading || isLoadingProfile || isLoadingCollection;
+  const isLoading = isUserLoading || isLoadingProfile || isLoadingCollection || isLoadingAllCards;
 
   if (isLoading) {
     return (
