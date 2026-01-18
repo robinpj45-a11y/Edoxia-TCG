@@ -3,6 +3,7 @@ import './globals.css';
 import { MainNav } from '@/components/main-nav';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
+import { PageBackground } from '@/components/page-background';
 
 export const metadata: Metadata = {
   title: 'Edoxia-TCG',
@@ -23,7 +24,8 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background font-body antialiased">
         <FirebaseClientProvider>
-          <header className="w-full border-b">
+          <PageBackground />
+          <header className="w-full border-b border-border/40 bg-background/80 backdrop-blur-sm">
             <div className="relative flex h-16 items-center">
               <MainNav />
             </div>
