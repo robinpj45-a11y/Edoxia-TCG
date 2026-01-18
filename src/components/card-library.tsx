@@ -8,13 +8,18 @@ import {
   DialogContent,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { Edit } from 'lucide-react';
 
 export function CardLibrary() {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const firestore = useFirestore();
+  const { user } = useUser();
+  const isAdmin = user?.email === 'test@edoxia.com';
 
   const cardsCollectionRef = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -35,15 +40,24 @@ export function CardLibrary() {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {cards && cards.length > 0 ? (
           cards.map((card) => (
-            <div
-              key={card.id}
-              className="cursor-pointer"
-              onClick={() => setSelectedCard(card)}
-            >
-              <TCGCard card={card} />
+            <div key={card.id} className="space-y-3">
+              <div
+                className="cursor-pointer"
+                onClick={() => setSelectedCard(card)}
+              >
+                <TCGCard card={card} />
+              </div>
+              {isAdmin && (
+                  <Button asChild variant="outline" className="w-full">
+                      <Link href={`/card-editor/${card.id}`}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Éditer la carte
+                      </Link>
+                  </Button>
+              )}
             </div>
           ))
         ) : (
