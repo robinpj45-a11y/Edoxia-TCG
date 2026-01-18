@@ -48,9 +48,7 @@ export function TCGCard({ card, imageUrl: previewImageUrl }: TCGCardProps) {
     <div
       className={cn(
         'group relative aspect-[3/4.5] w-full overflow-hidden rounded-xl border-2 shadow-lg transition-all duration-300 ease-in-out hover:scale-105',
-        rarity && !isFramed && (rarityStyles[rarity] || rarityStyles['Commun']),
-        isFramed &&
-          'border-4 border-amber-400 shadow-xl shadow-amber-400/30 hover:shadow-amber-400/50'
+        rarity && (rarityStyles[rarity] || rarityStyles['Commun'])
       )}
     >
       {displayImageUrl && (
