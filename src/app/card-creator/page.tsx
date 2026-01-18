@@ -256,6 +256,11 @@ export default function CardCreatorPage() {
                   <SelectItem value="Matière">Matière</SelectItem>
                   <SelectItem value="Moment de vie">Moment de vie</SelectItem>
                   <SelectItem value="Fantastique">Fantastique</SelectItem>
+                  <SelectItem value="Fleur">Fleur</SelectItem>
+                  <SelectItem value="Plante">Plante</SelectItem>
+                  <SelectItem value="Véhicule">Véhicule</SelectItem>
+                  <SelectItem value="Monument">Monument</SelectItem>
+                  <SelectItem value="Emotion">Emotion</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -5,7 +5,12 @@ export type CardType =
   | 'Métier'
   | 'Matière'
   | 'Moment de vie'
-  | 'Fantastique';
+  | 'Fantastique'
+  | 'Fleur'
+  | 'Plante'
+  | 'Véhicule'
+  | 'Monument'
+  | 'Emotion';
 
 export type Rarity =
   | 'Commun'

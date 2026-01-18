@@ -83,7 +83,12 @@
             "Métier",
             "Matière",
             "Moment de vie",
-            "Fantastique"
+            "Fantastique",
+            "Fleur",
+            "Plante",
+            "Véhicule",
+            "Monument",
+            "Emotion"
           ]
         },
         "rarity": {
