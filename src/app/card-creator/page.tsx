@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useFirebaseApp } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { collection, doc, setDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import type { Card } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import { Input } from '@/components/ui/input';
@@ -42,7 +41,6 @@ export default function CardCreatorPage() {
   const router = useRouter();
   const { toast } = useToast();
   const firestore = useFirestore();
-  const firebaseApp = useFirebaseApp();
 
   const [cardData, setCardData] = useState(defaultCard);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -78,14 +76,44 @@ export default function CardCreatorPage() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCardData((prev) => ({ ...prev, imageUrl: reader.result as string }));
+    if (!file) return;
+
+    setImageFile(file);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX_WIDTH = 800;
+        const canvas = document.createElement('canvas');
+        
+        const ratio = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * ratio;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // Get the data URL with JPEG compression to reduce size
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+        // Check if the size is under Firestore's limit (1MB) before setting
+        if (dataUrl.length > 1048487) {
+            toast({
+                variant: 'destructive',
+                title: 'Image trop lourde',
+                description: 'Même après optimisation, l\'image est trop volumineuse. Essayez une autre image.'
+            })
+            return;
+        }
+
+        setCardData((prev) => ({ ...prev, imageUrl: dataUrl }));
       };
-      reader.readAsDataURL(file);
-    }
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleTypeChange = (value: 'Creature' | 'Spell' | 'Artifact') => {
@@ -96,8 +124,8 @@ export default function CardCreatorPage() {
   };
 
   const handleSave = async () => {
-    if (!firestore || !firebaseApp || !imageFile || isSaving) {
-      if (!imageFile) {
+    if (!firestore || !cardData.imageUrl || isSaving) {
+      if (!cardData.imageUrl) {
         toast({
           variant: 'destructive',
           title: 'Erreur',
@@ -110,25 +138,17 @@ export default function CardCreatorPage() {
     setIsSaving(true);
 
     try {
-      // 1. Create a new document reference to get a unique ID
       const newCardRef = doc(collection(firestore, 'cards'));
       const newId = newCardRef.id;
 
-      // 2. Upload the image to Firebase Storage
-      const storage = getStorage(firebaseApp);
-      const imageRef = ref(storage, `card-images/${newId}`);
-      await uploadBytes(imageRef, imageFile);
-      const downloadURL = await getDownloadURL(imageRef);
-
-      // 3. Prepare the final card data object
       const cardToSave: Omit<Card, 'attack' | 'defense'> & { attack?: number; defense?: number; } = {
         id: newId,
         name: cardData.name,
         cost: cardData.cost,
         type: cardData.type,
         description: cardData.description,
-        imageId: newId, // Use newId as a reference, though imageUrl will be primary
-        imageUrl: downloadURL,
+        imageId: 'custom-' + newId,
+        imageUrl: cardData.imageUrl, // Save the resized data URL
       };
 
       if (cardData.type === 'Creature') {
@@ -136,10 +156,8 @@ export default function CardCreatorPage() {
         cardToSave.defense = cardData.defense;
       }
       
-      // 4. Save the card data to Firestore
       await setDoc(newCardRef, cardToSave);
 
-      // 5. Success feedback and form reset
       toast({
         title: 'Carte sauvegardée !',
         description: `${cardData.name} a été ajoutée à la base de données.`,
@@ -161,7 +179,6 @@ export default function CardCreatorPage() {
           'Impossible de sauvegarder la carte. Vérifiez la console pour plus de détails.',
       });
     } finally {
-      // 6. ALWAYS ensure the saving state is reset
       setIsSaving(false);
     }
   };
