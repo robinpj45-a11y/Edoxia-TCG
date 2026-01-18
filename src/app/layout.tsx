@@ -23,7 +23,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background font-body antialiased">
         <FirebaseClientProvider>
-          <header className="w-full">
+          <header className="w-full border-b">
             <div className="relative flex h-16 items-center">
               <MainNav />
             </div>
