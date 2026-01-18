@@ -284,7 +284,7 @@ export default function CardCreatorPage() {
               <div className="space-y-0.5">
                 <Label htmlFor="isFramed">Cadre spécial</Label>
                 <p className="text-[0.8rem] text-muted-foreground">
-                  Applique un cadre doré et rend la carte plus rare.
+                  Carte avec cadre, rend la carte plus rare
                 </p>
               </div>
               <Switch
