@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore } from '@/firebase';
 import { collection, doc, setDoc } from 'firebase/firestore';
-import type { Card } from '@/app/lib/card-data';
+import type { Card, Rarity } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,7 @@ const defaultCard = {
   attack: 1,
   defense: 1,
   type: 'Creature' as 'Creature' | 'Spell' | 'Artifact',
+  rarity: 'Commun' as Rarity,
   description: 'Description de la carte.',
   imageId: 'placeholder',
   imageUrl: '',
@@ -123,6 +124,13 @@ export default function CardCreatorPage() {
     }));
   };
 
+  const handleRarityChange = (value: Rarity) => {
+    setCardData((prev) => ({
+      ...prev,
+      rarity: value,
+    }));
+  };
+
   const handleSave = async () => {
     if (!firestore || !cardData.imageUrl || isSaving) {
       if (!cardData.imageUrl) {
@@ -146,6 +154,7 @@ export default function CardCreatorPage() {
         name: cardData.name,
         cost: cardData.cost,
         type: cardData.type,
+        rarity: cardData.rarity,
         description: cardData.description,
         imageId: 'custom-' + newId,
         imageUrl: cardData.imageUrl, // Save the resized data URL
@@ -248,6 +257,22 @@ export default function CardCreatorPage() {
                   <SelectItem value="Creature">Créature</SelectItem>
                   <SelectItem value="Spell">Sort</SelectItem>
                   <SelectItem value="Artifact">Artefact</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rarity">Rareté</Label>
+              <Select onValueChange={handleRarityChange} value={cardData.rarity} disabled={isSaving}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez une rareté" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Commun">Commun</SelectItem>
+                  <SelectItem value="Rare">Rare</SelectItem>
+                  <SelectItem value="Super-Rare">Super-Rare</SelectItem>
+                  <SelectItem value="Ultra-Rare">Ultra-Rare</SelectItem>
+                  <SelectItem value="Légendaire">Légendaire</SelectItem>
                 </SelectContent>
               </Select>
             </div>

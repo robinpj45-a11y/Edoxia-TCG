@@ -94,6 +94,17 @@
             "Artifact"
           ]
         },
+        "rarity": {
+          "type": "string",
+          "description": "The rarity of the card.",
+          "enum": [
+            "Commun",
+            "Rare",
+            "Super-Rare",
+            "Ultra-Rare",
+            "Légendaire"
+          ]
+        },
         "description": {
           "type": "string",
           "description": "The card's description or effect text."
@@ -112,7 +123,8 @@
         "name",
         "cost",
         "type",
-        "description"
+        "description",
+        "rarity"
       ]
     }
   },
