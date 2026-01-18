@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useFirebaseApp } from '@/firebase';
 import { collection, doc, setDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import type { Card } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import { Input } from '@/components/ui/input';
@@ -41,8 +42,10 @@ export default function CardCreatorPage() {
   const router = useRouter();
   const { toast } = useToast();
   const firestore = useFirestore();
+  const firebaseApp = useFirebaseApp();
 
   const [cardData, setCardData] = useState(defaultCard);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!isUserLoading) {
@@ -71,6 +74,19 @@ export default function CardCreatorPage() {
     }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file); // Save the file object for upload
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // For live preview
+        setCardData((prev) => ({ ...prev, imageUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleTypeChange = (value: 'Creature' | 'Spell' | 'Artifact') => {
     setCardData((prev) => ({
       ...prev,
@@ -79,41 +95,65 @@ export default function CardCreatorPage() {
   };
 
   const handleSave = async () => {
-    if (!firestore) return;
+    if (!firestore || !firebaseApp) return;
+
+    if (!imageFile) {
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: 'Veuillez sélectionner une illustration pour la carte.',
+      });
+      return;
+    }
 
     try {
+      // 1. Get a new card ID
       const newCardRef = doc(collection(firestore, 'cards'));
       const newId = newCardRef.id;
 
+      // 2. Upload image to Firebase Storage
+      const storage = getStorage(firebaseApp);
+      const imageRef = ref(storage, `card-images/${newId}`);
+      await uploadBytes(imageRef, imageFile);
+      const downloadURL = await getDownloadURL(imageRef);
+
+      // 3. Prepare card data for Firestore
       const cardToSave: Card = {
         ...cardData,
         id: newId,
-        imageUrl: cardData.imageUrl?.trim() ? cardData.imageUrl : undefined,
+        imageUrl: downloadURL,
       };
 
       if (cardToSave.type !== 'Creature') {
         delete cardToSave.attack;
         delete cardToSave.defense;
       }
-      
-      if (!cardToSave.imageUrl) {
-        delete cardToSave.imageUrl;
-      }
 
+      // 4. Save card data to Firestore
       await setDoc(newCardRef, cardToSave);
 
       toast({
         title: 'Carte sauvegardée !',
         description: `${cardToSave.name} a été ajoutée à la base de données.`,
       });
-      // Reset form
+
+      // 5. Reset form
       setCardData(defaultCard);
+      setImageFile(null);
+
+      // Also clear the file input
+      const fileInput = document.getElementById('imageUrl') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
     } catch (error: any) {
       console.error('Error saving card:', error);
       toast({
         variant: 'destructive',
         title: 'Erreur',
-        description: error.message || 'Impossible de sauvegarder la carte. Vérifiez la console pour plus de détails.',
+        description:
+          error.message ||
+          'Impossible de sauvegarder la carte. Vérifiez la console pour plus de détails.',
       });
     }
   };
@@ -125,7 +165,7 @@ export default function CardCreatorPage() {
       </div>
     );
   }
-  
+
   const previewCard: Card = {
     ...cardData,
     id: 'preview',
@@ -150,14 +190,13 @@ export default function CardCreatorPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="imageUrl">URL de l'illustration</Label>
+              <Label htmlFor="imageUrl">Illustration</Label>
               <Input
                 id="imageUrl"
                 name="imageUrl"
-                type="text"
-                placeholder="https://example.com/image.png"
-                value={cardData.imageUrl}
-                onChange={handleInputChange}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
               />
             </div>
 
@@ -241,7 +280,10 @@ export default function CardCreatorPage() {
         <div className="flex flex-col items-center">
           <h2 className="text-2xl font-bold mb-4 font-headline">Aperçu</h2>
           <div className="w-full max-w-sm">
-            <TCGCard card={previewCard} imageUrl={cardData.imageUrl || undefined} />
+            <TCGCard
+              card={previewCard}
+              imageUrl={cardData.imageUrl || undefined}
+            />
           </div>
         </div>
       </div>
