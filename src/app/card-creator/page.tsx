@@ -110,32 +110,29 @@ export default function CardCreatorPage() {
     setIsSaving(true);
 
     try {
-      // 1. Get a new card ID
       const newCardRef = doc(collection(firestore, 'cards'));
       const newId = newCardRef.id;
 
-      // 2. Upload image to Firebase Storage
       const storage = getStorage(firebaseApp);
       const imageRef = ref(storage, `card-images/${newId}`);
       await uploadBytes(imageRef, imageFile);
       const downloadURL = await getDownloadURL(imageRef);
 
-      // 3. Prepare card data for Firestore
-      const cardToSave: Card = {
+      const cardToSave: any = {
         id: newId,
         name: cardData.name,
         cost: cardData.cost,
         type: cardData.type,
         description: cardData.description,
-        imageId: newId, // Use the unique card ID for the imageId
+        imageId: newId,
         imageUrl: downloadURL,
-        ...(cardData.type === 'Creature' && {
-          attack: cardData.attack,
-          defense: cardData.defense,
-        }),
       };
 
-      // 4. Save card data to Firestore
+      if (cardData.type === 'Creature') {
+        cardToSave.attack = cardData.attack;
+        cardToSave.defense = cardData.defense;
+      }
+
       await setDoc(newCardRef, cardToSave);
 
       toast({
@@ -143,15 +140,14 @@ export default function CardCreatorPage() {
         description: `${cardToSave.name} a été ajoutée à la base de données.`,
       });
 
-      // 5. Reset form
       setCardData(defaultCard);
       setImageFile(null);
-
-      // Also clear the file input
+      
       const fileInput = document.getElementById('imageUrl') as HTMLInputElement;
       if (fileInput) {
         fileInput.value = '';
       }
+
     } catch (error: any) {
       console.error('Error saving card:', error);
       toast({
