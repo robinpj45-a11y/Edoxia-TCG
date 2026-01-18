@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Edit } from 'lucide-react';
 
-const rarityOrder: Rarity[] = ['Légendaire', 'Ultra-Rare', 'Super-Rare', 'Rare', 'Commun'];
+const rarityOrder: Rarity[] = ['Commun', 'Rare', 'Super-Rare', 'Ultra-Rare', 'Légendaire'];
 
 export function CardLibrary() {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);

@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 
-const rarityOrder: Rarity[] = ['Légendaire', 'Ultra-Rare', 'Super-Rare', 'Rare', 'Commun'];
+const rarityOrder: Rarity[] = ['Commun', 'Rare', 'Super-Rare', 'Ultra-Rare', 'Légendaire'];
 
 export default function MyCollectionPage() {
   const { user, isUserLoading } = useUser();
