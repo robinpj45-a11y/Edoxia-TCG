@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { Card, Rarity } from '@/app/lib/card-data';
+import type { Card } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import {
   Dialog,
@@ -14,8 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Edit } from 'lucide-react';
-
-const rarityOrder: Rarity[] = ['Commun', 'Rare', 'Super-Rare', 'Ultra-Rare', 'Légendaire'];
+import { rarityOrder } from '@/app/lib/rarity-data';
 
 export function CardLibrary() {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);

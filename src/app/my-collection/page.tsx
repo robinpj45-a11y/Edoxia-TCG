@@ -2,13 +2,12 @@
 
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
-import type { Card, Rarity } from '@/app/lib/card-data';
+import type { Card } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
-
-const rarityOrder: Rarity[] = ['Commun', 'Rare', 'Super-Rare', 'Ultra-Rare', 'Légendaire'];
+import { rarityOrder } from '@/app/lib/rarity-data';
 
 export default function MyCollectionPage() {
   const { user, isUserLoading } = useUser();
