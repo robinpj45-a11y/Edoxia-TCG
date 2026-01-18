@@ -2,11 +2,13 @@
 
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
-import type { Card } from '@/app/lib/card-data';
+import type { Card, Rarity } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
+
+const rarityOrder: Rarity[] = ['Légendaire', 'Ultra-Rare', 'Super-Rare', 'Rare', 'Commun'];
 
 export default function MyCollectionPage() {
   const { user, isUserLoading } = useUser();
@@ -41,6 +43,21 @@ export default function MyCollectionPage() {
     return allCards.filter((card) => ownedCardIds.includes(card.id));
   }, [allCards, userCardDocs]);
 
+  const groupedOwnedCards = useMemo(() => {
+    if (ownedCards.length === 0) return {};
+    const groups: Record<string, Card[]> = {};
+
+    for (const card of ownedCards) {
+        if (!card.rarity) continue; 
+        if (!groups[card.rarity]) {
+            groups[card.rarity] = [];
+        }
+        groups[card.rarity].push(card);
+    }
+    return groups;
+  }, [ownedCards]);
+
+
   const isLoading = isUserLoading || isLoadingCollection || isLoadingAllCards;
 
   if (isLoading) {
@@ -62,16 +79,25 @@ export default function MyCollectionPage() {
           Ma Collection
         </h1>
         <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-          Voici les cartes que vous possédez.
+          Voici les cartes que vous possédez, classées par rareté.
         </p>
       </header>
       {ownedCards.length > 0 ? (
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {ownedCards.map((card) => (
-            <div key={card.id}>
-              <TCGCard card={card} />
-            </div>
-          ))}
+        <div className="space-y-16">
+          {rarityOrder.map(rarity =>
+            groupedOwnedCards[rarity] && groupedOwnedCards[rarity].length > 0 && (
+              <div key={rarity}>
+                <h2 className="mb-8 font-headline text-4xl font-bold tracking-tighter text-center">{rarity}</h2>
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                  {groupedOwnedCards[rarity].map((card) => (
+                    <div key={card.id}>
+                      <TCGCard card={card} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          )}
         </div>
       ) : (
         <div className="text-center">

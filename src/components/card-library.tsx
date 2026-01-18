@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import type { Card } from '@/app/lib/card-data';
+import { useState, useMemo } from 'react';
+import type { Card, Rarity } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
 import {
   Dialog,
@@ -14,6 +14,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Edit } from 'lucide-react';
+
+const rarityOrder: Rarity[] = ['Légendaire', 'Ultra-Rare', 'Super-Rare', 'Rare', 'Commun'];
 
 export function CardLibrary() {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
@@ -28,6 +30,20 @@ export function CardLibrary() {
 
   const { data: cards, isLoading } = useCollection<Card>(cardsCollectionRef);
 
+  const groupedCards = useMemo(() => {
+    if (!cards) return {};
+    const groups: Record<string, Card[]> = {};
+
+    for (const card of cards) {
+        if (!card.rarity) continue;
+        if (!groups[card.rarity]) {
+            groups[card.rarity] = [];
+        }
+        groups[card.rarity].push(card);
+    }
+    return groups;
+  }, [cards]);
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
@@ -40,26 +56,35 @@ export function CardLibrary() {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div className="space-y-16">
         {cards && cards.length > 0 ? (
-          cards.map((card) => (
-            <div key={card.id} className="space-y-3">
-              <div
-                className="cursor-pointer"
-                onClick={() => setSelectedCard(card)}
-              >
-                <TCGCard card={card} />
+          rarityOrder.map(rarity => 
+            groupedCards[rarity] && groupedCards[rarity].length > 0 && (
+            <div key={rarity}>
+              <h2 className="mb-8 font-headline text-4xl font-bold tracking-tighter text-center">{rarity}</h2>
+              <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                {groupedCards[rarity].map((card) => (
+                  <div key={card.id} className="space-y-3">
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => setSelectedCard(card)}
+                    >
+                      <TCGCard card={card} />
+                    </div>
+                    {isAdmin && (
+                        <Button asChild variant="outline" className="w-full">
+                            <Link href={`/card-editor/${card.id}`}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Éditer la carte
+                            </Link>
+                        </Button>
+                    )}
+                  </div>
+                ))}
               </div>
-              {isAdmin && (
-                  <Button asChild variant="outline" className="w-full">
-                      <Link href={`/card-editor/${card.id}`}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Éditer la carte
-                      </Link>
-                  </Button>
-              )}
             </div>
-          ))
+            )
+          )
         ) : (
           <div className="text-center col-span-full py-12">
             <p className="text-muted-foreground">La bibliothèque de cartes est vide.</p>
