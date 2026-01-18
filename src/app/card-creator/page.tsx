@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import type { Card } from '@/app/lib/card-data';
 import { TCGCard } from '@/components/tcg-card';
@@ -25,14 +25,15 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-const defaultCard: Omit<Card, 'id'> = {
+const defaultCard = {
   name: 'Nom de la carte',
   cost: 1,
   attack: 1,
   defense: 1,
-  type: 'Creature',
+  type: 'Creature' as 'Creature' | 'Spell' | 'Artifact',
   description: 'Description de la carte.',
-  imageId: 'placeholder', // Not really used for preview
+  imageId: 'placeholder',
+  imageUrl: '',
 };
 
 export default function CardCreatorPage() {
@@ -41,8 +42,7 @@ export default function CardCreatorPage() {
   const { toast } = useToast();
   const firestore = useFirestore();
 
-  const [cardData, setCardData] = useState<Omit<Card, 'id'>>(defaultCard);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [cardData, setCardData] = useState(defaultCard);
 
   useEffect(() => {
     if (!isUserLoading) {
@@ -78,17 +78,6 @@ export default function CardCreatorPage() {
     }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleSave = async () => {
     if (!firestore) return;
 
@@ -99,12 +88,16 @@ export default function CardCreatorPage() {
       const cardToSave: Card = {
         ...cardData,
         id: newId,
-        imageUrl: imagePreview || undefined,
+        imageUrl: cardData.imageUrl?.trim() ? cardData.imageUrl : undefined,
       };
 
       if (cardToSave.type !== 'Creature') {
         delete cardToSave.attack;
         delete cardToSave.defense;
+      }
+      
+      if (!cardToSave.imageUrl) {
+        delete cardToSave.imageUrl;
       }
 
       await setDoc(newCardRef, cardToSave);
@@ -115,13 +108,12 @@ export default function CardCreatorPage() {
       });
       // Reset form
       setCardData(defaultCard);
-      setImagePreview(null);
     } catch (error: any) {
       console.error('Error saving card:', error);
       toast({
         variant: 'destructive',
         title: 'Erreur',
-        description: 'Impossible de sauvegarder la carte. Vérifiez la console pour plus de détails.',
+        description: error.message || 'Impossible de sauvegarder la carte. Vérifiez la console pour plus de détails.',
       });
     }
   };
@@ -158,12 +150,14 @@ export default function CardCreatorPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="image">Illustration de la carte</Label>
+              <Label htmlFor="imageUrl">URL de l'illustration</Label>
               <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
+                id="imageUrl"
+                name="imageUrl"
+                type="text"
+                placeholder="https://example.com/image.png"
+                value={cardData.imageUrl}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -247,7 +241,7 @@ export default function CardCreatorPage() {
         <div className="flex flex-col items-center">
           <h2 className="text-2xl font-bold mb-4 font-headline">Aperçu</h2>
           <div className="w-full max-w-sm">
-            <TCGCard card={previewCard} imageUrl={imagePreview || undefined} />
+            <TCGCard card={previewCard} imageUrl={cardData.imageUrl || undefined} />
           </div>
         </div>
       </div>
