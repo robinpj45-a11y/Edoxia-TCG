@@ -1,21 +1,18 @@
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function Home() {
-  const homeBg = PlaceHolderImages.find((img) => img.id === 'home-background');
-
   return (
     <div className="relative h-[calc(100vh-4rem)] w-full overflow-hidden">
-      {homeBg && (
-        <Image
-          src={homeBg.imageUrl}
-          alt={homeBg.description}
-          fill
-          className="object-cover"
-          priority
-          data-ai-hint={homeBg.imageHint}
-        />
-      )}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute z-0 h-full w-full object-cover"
+      >
+        <source src="/background.mp4" type="video/mp4" />
+        Votre navigateur ne supporte pas la lecture de vidéos.
+      </video>
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center text-white">
         <Image
