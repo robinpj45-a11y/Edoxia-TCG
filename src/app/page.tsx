@@ -10,7 +10,7 @@ export default function Home() {
         playsInline
         className="absolute z-0 h-full w-full object-cover"
       >
-        <source src="/background.mp4" type="video/mp4" />
+        <source src="/placeholder%20background%201.mp4" type="video/mp4" />
         Votre navigateur ne supporte pas la lecture de vidéos.
       </video>
       <div className="absolute inset-0 bg-black/50" />
