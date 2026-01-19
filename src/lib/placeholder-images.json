@@ -3,37 +3,37 @@
     {
       "id": "card-image-1",
       "description": "Mystical forest creature",
-      "imageUrl": "https://images.unsplash.com/photo-1665072155564-6a05c28bbaa3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmb3Jlc3QlMjBjcmVhdHVyZXxlbnwwfHx8fDE3Njg2NzU5NzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1663703095629-0ff6d7810768?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxmb3Jlc3QlMjBjcmVhdHVyZXxlbnwwfHx8fDE3Njg4NTEyMjV8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "forest creature"
     },
     {
       "id": "card-image-2",
       "description": "A powerful spell being cast",
-      "imageUrl": "https://images.unsplash.com/photo-1624274567304-780bfc30b8be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYWdpYyUyMHNwZWxsfGVufDB8fHx8MTc2ODYzNTM5MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1635622840764-a1e78449c383?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYWdpYyUyMHNwZWxsfGVufDB8fHx8MTc2ODc3NjYwMXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "magic spell"
     },
     {
       "id": "card-image-3",
       "description": "An ancient artifact",
-      "imageUrl": "https://images.unsplash.com/photo-1695902046953-1bf8caee5ac3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhbmNpZW50JTIwYXJ0aWZhY3R8ZW58MHx8fHwxNzY4NjM2NzQ4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1767938072182-f0b2a5225d1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhbmNpZW50JTIwYXJ0aWZhY3R8ZW58MHx8fHwxNzY4Nzc5MjIyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "ancient artifact"
     },
     {
       "id": "card-image-4",
       "description": "A dragon in the mountains",
-      "imageUrl": "https://images.unsplash.com/photo-1768161680835-c8e0cca76c22?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkcmFnb24lMjBtb3VudGFpbnxlbnwwfHx8fDE3Njg1NTI1MDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1681126172968-80505c6ef33e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkcmFnb24lMjBtb3VudGFpbnxlbnwwfHx8fDE3Njg4NTEyMjV8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "dragon mountain"
     },
     {
       "id": "card-image-5",
       "description": "A wizard summoning energy",
-      "imageUrl": "https://images.unsplash.com/photo-1606817613313-43145d46b5c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3aXphcmQlMjBlbmVyZ3l8ZW58MHx8fHwxNzY4Njc1OTczfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1580040966165-ad41f5c9b4da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3aXphcmQlMjBlbmVyZ3l8ZW58MHx8fHwxNzY4ODUxMjI2fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "wizard energy"
     },
     {
       "id": "home-background",
       "description": "Fantasy landscape for homepage",
-      "imageUrl": "https://images.unsplash.com/photo-1475113548554-5a36f1f523d6?q=80&w=1920&auto=format&fit=crop",
+      "imageUrl": "https://images.unsplash.com/photo-1593410733607-4fe72c8f3f73?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYW50YXN5JTIwbGFuZHNjYXBlfGVufDB8fHx8MTc2ODc2NDg4NXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "fantasy landscape"
     }
   ]
